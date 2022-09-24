@@ -26,12 +26,12 @@ const getRequest = async (event) => {
   if (event.rawPath === '/address') {
     let options = MembershipListRequestOptions();
     const userAddress = event.queryStringParameters?.memberAddress;
-    console.log(userAddress);
+    
     options.expressionMap = {
-      ':chainId' : process.env.CHAIN,
+      ':chainId' : Number(process.env.CHAIN),
       ':memberAddress' : userAddress, 
     };
-    
+    console.log(options);
     return getMemberList(options);
   } else {
     return Promise.resolve([]);
@@ -119,14 +119,10 @@ if (process.env.NODE_ENV === 'local') {
 
 //handler({executionType : 'episode'}, {});
 
-/*postRequest({
-  rawPath : '/user-setting',
-  body : {
-    chainId: 31337,
-    channelId: '0x00',
-    buzzsproutToken : 'testToken',
-    lastModified: new Date().toUTCString(),
-    ownerId: '0x836C31094bEa1aE6b65F76D1C906b01329645a9431337'
+/*getRequest({
+  rawPath : '/address',
+  queryStringParameters: {
+    memberAddress: '0xe33a4454824D32259D532057De08aC871d3bE8e5'
   }
 }).then((results, err) => {
   console.log(results,err);
