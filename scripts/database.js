@@ -4,13 +4,16 @@ const AWS = require('aws-sdk');
 const region = "us-west-2";
 const queryProjection = 'chainId,groupId,allocation';
 const tableName = 'sharerev-membership-list';
-AWS.config.update({
-  region: region,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  }
-});
+if (process.env.NODE_ENV === 'local') {
+  AWS.config.update({
+    region: region,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    }
+  });
+}
+
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 const upsertList = (event) => {
