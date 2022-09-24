@@ -1,0 +1,18 @@
+{
+  "name": "sharerev-backend",
+  "version": "1.0.0",
+  "description": "Lambda backend for Sharerev",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node index.js"
+  },
+  "author": "JP",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1223.0",
+    "dotenv": "^16.0.2",
+    "web3": "^1.8.0"
+  }
+}
