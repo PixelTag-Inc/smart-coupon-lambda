@@ -26,9 +26,10 @@ const getRequest = async (event) => {
   if (event.rawPath === '/address') {
     let options = MembershipListRequestOptions();
     const userAddress = event.queryStringParameters?.memberAddress;
+    console.log(userAddress);
     options.expressionMap = {
-      ':memberAddress' : userAddress, 
       ':chainId' : process.env.CHAIN,
+      ':memberAddress' : userAddress, 
     };
     
     return getMemberList(options);
