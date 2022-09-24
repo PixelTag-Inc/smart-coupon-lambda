@@ -20,7 +20,6 @@ const contractAddress = process.env.GROUP_FACTORY_ADDRESS;
 const wsUri = process.env.WS_URI;
 const days = 60;
 
-const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
 let networkId; 
 
 const getRequest = async (event) => {
@@ -29,7 +28,7 @@ const getRequest = async (event) => {
     const userAddress = event.queryStringParameters?.memberAddress;
     options.expressionMap = {
       ':memberAddress' : userAddress, 
-      ':chainId' : process.env.NODE_ENV === 'local' ? 31337 : 80001,
+      ':chainId' : process.env.CHAIN,
     };
     
     return getMemberList(options);
@@ -81,6 +80,7 @@ const setMemberList = async (groupId, allocation) => {
 exports.handler = handler;
 
 if (process.env.NODE_ENV === 'local') {
+  const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const contract = new web3.eth.Contract(ABI.abi, contractAddress);
   // Group Create Subscription
   contract.events.GroupCreate({
