@@ -11,7 +11,8 @@ const {
   MembershipList,
   MembershipListRequestOptions,
   getMemberList,
-  upsertList,
+  insertList,
+  updateList,
 } = require('./scripts/database.js');
 const Web3 = require('web3');
 const ABI = require('./static/GroupFactory.json');
@@ -66,16 +67,13 @@ const handler = (event, context) => {
   }
 }; 
 
-const setMemberList = async (groupId, allocation) => {
+const buildMemberList = (groupId, allocation) => {
   let memberList = MembershipList();
   memberList.chainId = process.env.NODE_ENV === 'local' ? 31337 : 80001;
   memberList.groupId = groupId;
   memberList.allocation = allocation;
-  upsertList(memberList).then((val) => {
-    console.log('success', val);
-  }).catch((err) => {
-    console.log('error', err);
-  });
+  return memberList;
+  
 };
 
 exports.handler = handler;
@@ -91,13 +89,12 @@ if (process.env.NODE_ENV === 'local') {
   })
   .on('data', function(event){
     console.log('groupCreate',event.returnValues.sender); // same results as the optional callback above
-    setMemberList(Number(event.returnValues.groupIndex), [event.returnValues.sender])
-  })
-  .on('changed', function(event){
-      // remove event from local database
-  })
-  .on('error', function(error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      //error
+    const memberList = buildMemberList(Number(event.returnValues.groupIndex), [event.returnValues.sender]);
+    insertList(memberList).then((val) => {
+      console.log('success', val);
+    }).catch((err) => {
+      console.log('error', err);
+    });
   });
 
   //Membership Update Subscription
@@ -107,14 +104,17 @@ if (process.env.NODE_ENV === 'local') {
       console.log('connected memberhship',subscriptionId);
   })
   .on('data', function(event){
-      console.log('memberhsipUpdate',event); // same results as the optional callback above
-  })
-  .on('changed', function(event){
-      // remove event from local database
-  })
-  .on('error', function(error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      //error
+      console.log('memberhsipUpdate',event);
+      const memberList = buildMemberList(Number(event.returnValues.groupIndex), event.returnValues.allocation);
+      insertList(memberList).then((val) => {
+        console.log('success', val);
+      }).catch((err) => {
+        console.log('error', err);
+      });
   });
+
+  const blockNumber = 10;
+  //contract.getPastEvents("MembershipUpdate", {fromBlock: blockNumber, toBlock: blockNumber})
 }
 
 //handler({executionType : 'episode'}, {});

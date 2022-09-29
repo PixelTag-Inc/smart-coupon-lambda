@@ -16,15 +16,25 @@ if (process.env.NODE_ENV === 'local') {
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
-const upsertList = (event) => {
+const insertList = (event) => {
   console.log(tableName, event);
-    var params = {
+  const params = {
         TableName: tableName,
         Item: event
     };
 
     return docClient.put(params).promise();
 };
+
+const updateList = (event) => {
+  console.log(tableName, event);
+    const params = {
+        TableName: tableName,
+        Item: event
+    };
+
+    return docClient.update(params).promise();
+}
 
 const getMemberList = (options) => {
     var params = {
@@ -59,4 +69,5 @@ const MembershipListRequestOptions = () => {
 exports.MembershipList = MembershipList;
 exports.MembershipListRequestOptions = MembershipListRequestOptions;
 exports.getMemberList = getMemberList;
-exports.upsertList = upsertList;
+exports.insertList = insertList;
+exports.updateList = updateList;
