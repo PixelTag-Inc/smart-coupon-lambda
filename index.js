@@ -87,7 +87,7 @@ const handleAlchemyTransaction = (event) => {
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const contract = new web3.eth.Contract(ABI.abi, contractAddress);
   //let data = JSON.parse(event.body);
-  const tempTransactionHash = event.body.event.transaction.hash;
+  const tempTransactionHash = event.body;
   console.log('tempTransactioHash',tempTransactionHash);
   web3.eth.getTransaction(tempTransactionHash, (err,result) => {
     const blockNum = result.blockNumber;
