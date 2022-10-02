@@ -46,7 +46,7 @@ const postRequest = async (event) => {
     //return upsertSetting(JSON.parse(event.body));
     return Promise.resolve([]);
   } else if (event.rawPath === '/alchemy') {
-    handleAlchemyTransaction(event);
+    await handleAlchemyTransaction(event);
   } 
 }
 
@@ -82,13 +82,13 @@ const buildMemberList = (groupId, allocation) => {
   
 };
 
-const handleAlchemyTransaction = (event) => {
+const handleAlchemyTransaction = async (event) => {
   console.log(event.body, typeof event.body);
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const contract = new web3.eth.Contract(ABI.abi, contractAddress);
   //let data = JSON.parse(event.body);
   const tempTransactionHash = event.body;
-  console.log('tempTransactioHash',tempTransactionHash);
+  console.log('tempTransactioHash',tempTransactionHash, web3);
   web3.eth.getTransaction(tempTransactionHash, (err,result) => {
     console.log('getTransaction', err, result);
     const blockNum = result.blockNumber;
