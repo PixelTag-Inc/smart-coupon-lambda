@@ -54,10 +54,10 @@ const handler = (event, context) => {
   if (event.requestContext.http.method === 'POST') {
     postRequest(event).then((results, err) => {
       console.log('postRequest',results,err);
-      context.done(null, {
+      /*context.done(null, {
         statusCode: 200, // default value
         body: JSON.stringify({err, results})
-      });
+      });*/
     })
   } else if (event.requestContext.http.method === 'GET') {
     getRequest(event).then((results, err) => {
