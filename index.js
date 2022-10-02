@@ -90,10 +90,11 @@ const handleAlchemyTransaction = (event) => {
   const tempTransactionHash = event.body;
   console.log('tempTransactioHash',tempTransactionHash);
   web3.eth.getTransaction(tempTransactionHash, (err,result) => {
+    console.log(err, result);
     const blockNum = result.blockNumber;
     console.log('blockNumber', blockNum);
-    contract.getPastEvents('GroupCreate', {fromBlock:blockNum, toBlock:blockNum}, (err2, events) => {
-      
+    contract.getPastEvents('GroupCreate', {fromBlock:blockNum-1, toBlock:blockNum}, (err2, events) => {
+      console.log(events.length)
       const finalEvent = events.find((event) => {
         return event.transactionHash === tempTransactionHash;
       });
@@ -107,8 +108,8 @@ const handleAlchemyTransaction = (event) => {
       }
     });
 
-    contract.getPastEvents('MembershipUpdate', {fromBlock:blockNum, toBlock:blockNum}, (err2, events) => {
-      
+    contract.getPastEvents('MembershipUpdate', {fromBlock:blockNum-1, toBlock:blockNum}, (err2, events) => {
+      console.log(events.length)
       const finalEvent = events.find((event) => {
         return event.transactionHash === tempTransactionHash;
       });
@@ -162,5 +163,7 @@ if (process.env.NODE_ENV === 'local') {
       });
   });
 }
+
+//handleAlchemyTransaction({body: '0x7637f0ab7db9a3c70584fcf1e0947867952d6620a8a9851885dc2b9578f0ef72'})
 
 
