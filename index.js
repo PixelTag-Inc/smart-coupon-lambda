@@ -89,12 +89,14 @@ const handleAlchemyTransaction = (event) => {
       const finalEvent = events.find((event) => {
         return event.transactionHash === tempTransactionHash;
       });
-      const memberList = buildMemberList(Number(finalEvent.returnValues.groupIndex), [finalEvent.returnValues.sender]);
-      insertList(memberList).then((val) => {
-        console.log('success', val);
-      }).catch((err) => {
-        console.log('error', err);
-      });
+      if (finalEvent) {
+        const memberList = buildMemberList(Number(finalEvent.returnValues.groupIndex), [finalEvent.returnValues.sender]);
+        insertList(memberList).then((val) => {
+          console.log('success', val);
+        }).catch((err) => {
+          console.log('error', err);
+        });
+      }
     });
 
     contract.getPastEvents('MembershipUpdate', {fromBlock:blockNum, toBlock:blockNum}, (err2, events) => {
@@ -102,12 +104,14 @@ const handleAlchemyTransaction = (event) => {
       const finalEvent = events.find((event) => {
         return event.transactionHash === tempTransactionHash;
       });
-      const memberList = buildMemberList(Number(finalEvent.returnValues.groupIndex), finalEvent.returnValues.allocation);
-      insertList(memberList).then((val) => {
-        console.log('success', val);
-      }).catch((err) => {
-        console.log('error', err);
-      });
+      if (finalEvent) {
+        const memberList = buildMemberList(Number(finalEvent.returnValues.groupIndex), finalEvent.returnValues.allocation);
+        insertList(memberList).then((val) => {
+          console.log('success', val);
+        }).catch((err) => {
+          console.log('error', err);
+        });
+      }
     });
     
   });
