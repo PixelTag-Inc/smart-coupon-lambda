@@ -90,7 +90,7 @@ const handleAlchemyTransaction = (event) => {
   const tempTransactionHash = event.body;
   console.log('tempTransactioHash',tempTransactionHash);
   web3.eth.getTransaction(tempTransactionHash, (err,result) => {
-    console.log(err, result);
+    console.log('getTransaction', err, result);
     const blockNum = result.blockNumber;
     console.log('blockNumber', blockNum);
     contract.getPastEvents('GroupCreate', {fromBlock:blockNum-1, toBlock:blockNum}, (err2, events) => {
