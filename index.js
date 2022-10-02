@@ -80,7 +80,7 @@ const buildMemberList = (groupId, allocation) => {
 
 const handleAlchemyTransaction = (event) => {
   console.log(event.body);
-  const tempTransactionHash = event.body.fullTransaction.hash;
+  const tempTransactionHash = event.body.event.transaction.hash;
   console.log('tempTransactioHash',tempTransactionHash);
   web3.eth.getTransaction(tempTransactionHash, (err,result) => {
     const blockNum = result.blockNumber;
