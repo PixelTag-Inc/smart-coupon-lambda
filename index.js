@@ -84,6 +84,8 @@ const buildMemberList = (groupId, allocation) => {
 
 const handleAlchemyTransaction = (event) => {
   console.log(event.body, typeof event.body);
+  const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+  const contract = new web3.eth.Contract(ABI.abi, contractAddress);
   const tempTransactionHash = JSON.parse(event.body).event.transaction.hash;
   console.log('tempTransactioHash',tempTransactionHash);
   web3.eth.getTransaction(tempTransactionHash, (err,result) => {
