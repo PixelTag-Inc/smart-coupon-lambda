@@ -34,7 +34,7 @@ const getRequest = async (event) => {
     };
     console.log(options);
     return getMemberList(options);
-  } else {
+  }else {
     return Promise.resolve([]);
   }
 }
@@ -44,7 +44,9 @@ const postRequest = async (event) => {
     // Add functionality to consume transactions from Alchemy
     //return upsertSetting(JSON.parse(event.body));
     return Promise.resolve([]);
-  }
+  } else if (event.rawPath === '/alchemy') {
+    handleAlchemyTransaction(event);
+  } 
 }
 
 const handler = (event, context) => {
@@ -76,6 +78,41 @@ const buildMemberList = (groupId, allocation) => {
   
 };
 
+const handleAlchemyTransaction = (event) => {
+  const tempTransactionHash = event.body.fullTransaction.hash;
+
+  web3.eth.getTransaction(tempTransactionHash, (err,result) => {
+    const blockNum = result.blockNumber;
+    
+    contract.getPastEvents('GroupCreate', {fromBlock:blockNum, toBlock:blockNum}, (err2, events) => {
+      
+      const finalEvent = events.find((event) => {
+        return event.transactionHash === tempTransactionHash;
+      });
+      const memberList = buildMemberList(Number(finalEvent.returnValues.groupIndex), [finalEvent.returnValues.sender]);
+      insertList(memberList).then((val) => {
+        console.log('success', val);
+      }).catch((err) => {
+        console.log('error', err);
+      });
+    });
+
+    contract.getPastEvents('MembershipUpdate', {fromBlock:blockNum, toBlock:blockNum}, (err2, events) => {
+      
+      const finalEvent = events.find((event) => {
+        return event.transactionHash === tempTransactionHash;
+      });
+      const memberList = buildMemberList(Number(finalEvent.returnValues.groupIndex), finalEvent.returnValues.allocation);
+      insertList(memberList).then((val) => {
+        console.log('success', val);
+      }).catch((err) => {
+        console.log('error', err);
+      });
+    });
+    
+  });
+}
+
 exports.handler = handler;
 
 if (process.env.NODE_ENV === 'local') {
@@ -83,7 +120,7 @@ if (process.env.NODE_ENV === 'local') {
   const contract = new web3.eth.Contract(ABI.abi, contractAddress);
   // Group Create Subscription
   contract.events.GroupCreate({
-  })
+  }, function(error, event){ console.log(event); })
   .on("connected", function(subscriptionId){
       console.log('connected group',subscriptionId);
   })
@@ -112,19 +149,6 @@ if (process.env.NODE_ENV === 'local') {
         console.log('error', err);
       });
   });
-
-  const blockNumber = 10;
-  //contract.getPastEvents("MembershipUpdate", {fromBlock: blockNumber, toBlock: blockNumber})
 }
 
-//handler({executionType : 'episode'}, {});
 
-/*getRequest({
-  rawPath : '/address',
-  queryStringParameters: {
-    memberAddress: '0xe33a4454824D32259D532057De08aC871d3bE8e5'
-  }
-}).then((results, err) => {
-  console.log(results,err);
-  process.exit();
-})*/
