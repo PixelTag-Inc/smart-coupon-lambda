@@ -27,9 +27,10 @@ const getRequest = async (event) => {
   if (event.rawPath === '/address') {
     let options = MembershipListRequestOptions();
     const userAddress = event.queryStringParameters?.memberAddress;
+    const chainId =  Number(event.queryStringParameters?.chainId);
     
     options.expressionMap = {
-      ':chainId' : Number(process.env.CHAIN),
+      ':chainId' : chainId,
       ':memberAddress' : userAddress, 
     };
     console.log(options);
@@ -71,7 +72,10 @@ const handler = (event, context) => {
 
 const buildMemberList = (groupId, allocation) => {
   let memberList = MembershipList();
-  memberList.chainId = process.env.NODE_ENV === 'local' ? 31337 : 80001;
+  memberList.chainId = 
+    process.env.NODE_ENV === 'local' ? 31337 : 
+    process.env.NODE_ENV === 'dev' ? 80001 : 80001
+  ;
   memberList.groupId = groupId;
   memberList.allocation = allocation;
   return memberList;
