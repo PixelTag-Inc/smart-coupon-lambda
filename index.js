@@ -55,7 +55,8 @@ const handleCreateERC20Reward = async (event) => {
   const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
   //let data = JSON.parse(event.body);
 
-  const tempData = event.body;
+  const tempData = JSON.parse(event.body);
+  console.log(tempData.initialSuppy);
   return contract.methods.createErc20Token(tempData.name, tempData.symbol, ethers.BigNumber.from(tempData.initialSuppy), apiUserAddressFinal).send({from:apiUserAddressFinal});
 }
 
