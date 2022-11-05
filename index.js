@@ -1,7 +1,7 @@
 
 
 // Used for testing in local env
-//require('dotenv').config();
+require('dotenv').config();
 
 const Web3 = require('web3');
 const ethers = require('ethers');
@@ -58,7 +58,7 @@ const handleCreateERC20Reward = async (event) => {
   const tempData = JSON.parse(event.body);
   console.log(tempData, typeof tempData);
   console.log(tempData.initialSupply);
-  return contract.methods.createErc20Token(tempData.name, tempData.symbol, ethers.BigNumber.from(tempData.initialSupply), apiUserAddressFinal).send({from:apiUserAddressFinal});
+  return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal});
 }
 
 const handleCreateUnlockReward= async (event) => {
@@ -73,4 +73,5 @@ const handleCreateUnlockReward= async (event) => {
 }
 
 exports.handler = handler;
-
+//const temp = 5000;
+//console.log(ethers.BigNumber.from(temp))
