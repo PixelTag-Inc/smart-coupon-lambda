@@ -6,7 +6,7 @@ require('dotenv').config();
 const Web3 = require('web3');
 const ethers = require('ethers');
 const ERC20FactoryABI = require('./static/SmartCoupon.json');
-const unlockABI = require("@unlock-protocol/contracts/abis/Unlock");
+const unlockABI = require('./static/Unlock.json');
 
 const factoryAddress = process.env.ERC20_FACTORY_ADDRESS;
 const unlockAddress = process.env.UNLOCK_ADDRESS;
