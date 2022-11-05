@@ -13,7 +13,7 @@ const unlockAddress = process.env.UNLOCK_ADDRESS;
 const wsUri = process.env.PUBLIC_WS_URI;
 
 console.log(wsUri);
-const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+//const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
 const contractAddress = process.env.WORKSMANAGER_ADDRESS_MUMBAI;
 const apiUserPrivateKey = process.env.API_ETH_PRIVATE_KEY;
 const apiUserAddress = process.env.API_ETH_ADDRESS;
@@ -51,7 +51,7 @@ const handler = (event, context) => {
 //function createErc20Token(string calldata tokenName, string calldata symbol, uint256 supply, address to) external returns(address)
 const handleCreateERC20Reward = async (event) => {
   console.log(event.body, typeof event.body);
-  //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+  const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
   //let data = JSON.parse(event.body);
 
