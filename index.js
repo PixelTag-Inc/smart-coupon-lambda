@@ -12,6 +12,7 @@ const factoryAddress = process.env.ERC20_FACTORY_ADDRESS;
 const unlockAddress = process.env.UNLOCK_ADDRESS;
 const wsUri = process.env.WS_URI;
 
+console.log(wsUri);
 const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
 const contractAddress = process.env.WORKSMANAGER_ADDRESS_MUMBAI;
 const apiUserPrivateKey = process.env.DEVACCOUNTKEY;
