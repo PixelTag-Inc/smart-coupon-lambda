@@ -63,7 +63,11 @@ const handleCreateERC20Reward = async (event) => {
     console.log('running post data');
     return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice});
   }).then((res, err) => {
+    console.log(res);
     return res;
+  }).catch((err) => {
+    console.log(err);
+    return err;
   })
   
 }
@@ -83,19 +87,3 @@ exports.handler = handler;
 //const temp = 5000;
 //console.log(ethers.BigNumber.from(temp))
 //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
-const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
-const tempData = {
-  type: 'erc20',
-  symbol: 'AD1',
-  name: 'ERC 20 Token',
-  initialSupply: 5000,
-  imageUrl: 'https://brand.assets.adidas.com/image/upload/f_auto,q_auto,fl_lossy/enUS/Images/rfto-logo-small-d_tcm221-895039.png'
-};
-
-contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
-  const gasprice = gasAmount * 1.4;
-  console.log('running post data');
-  return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice});
-}).then((res, err) => {
-  console.log(err, res);
-})
