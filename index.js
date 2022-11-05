@@ -38,11 +38,11 @@ const postRequest = async (event) => {
 
 const handler = (event, context) => {
   if (event.requestContext.http.method === 'POST') {
-    postRequest(event).then((address, err) => {
-      console.log('postRequest',address,err);
+    postRequest(event).then((address) => {
+      console.log('postRequest',address);
       context.done(null, {
         statusCode: 200, // default value
-        body: JSON.stringify({err, address})
+        body: address
       });
     })
   } 
@@ -63,8 +63,8 @@ const handleCreateERC20Reward = async (event) => {
     console.log('running post data');
     return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice});
   }).then((res, err) => {
-    console.log(res);
-    return res;
+    console.log('success',res);
+    return res.events['0'].address;
   }).catch((err) => {
     console.log('error',err);
     return err;
