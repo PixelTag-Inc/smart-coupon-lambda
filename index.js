@@ -1,7 +1,7 @@
 
 
 // Used for testing in local env
-require('dotenv').config();
+//require('dotenv').config();
 
 const Web3 = require('web3');
 const ethers = require('ethers');
