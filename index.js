@@ -10,13 +10,13 @@ const unlockABI = require('./static/Unlock.json');
 
 const factoryAddress = process.env.ERC20_FACTORY_ADDRESS;
 const unlockAddress = process.env.UNLOCK_ADDRESS;
-const wsUri = process.env.WS_URI;
+const wsUri = process.env.PUBLIC_WS_URI;
 
 console.log(wsUri);
 const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
 const contractAddress = process.env.WORKSMANAGER_ADDRESS_MUMBAI;
-const apiUserPrivateKey = process.env.DEVACCOUNTKEY;
-const apiUserAddress = process.env.DEVACCOUNTADDRESS;
+const apiUserPrivateKey = process.env.API_ETH_PRIVATE_KEY;
+const apiUserAddress = process.env.API_ETH_ADDRESS;
 let networkId = parseInt(process.env.CHAINID);
 const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
   
@@ -51,14 +51,21 @@ const handler = (event, context) => {
 //function createErc20Token(string calldata tokenName, string calldata symbol, uint256 supply, address to) external returns(address)
 const handleCreateERC20Reward = async (event) => {
   console.log(event.body, typeof event.body);
-  const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+  //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
   //let data = JSON.parse(event.body);
 
   const tempData = JSON.parse(event.body);
   console.log(tempData, typeof tempData);
   console.log(tempData.initialSupply);
-  return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal});
+  return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
+    const gasprice = gasAmount * 1.4;
+    console.log('running post data');
+    return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice});
+  }).then((res, err) => {
+    return res;
+  })
+  
 }
 
 const handleCreateUnlockReward= async (event) => {
@@ -75,3 +82,20 @@ const handleCreateUnlockReward= async (event) => {
 exports.handler = handler;
 //const temp = 5000;
 //console.log(ethers.BigNumber.from(temp))
+//const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
+const tempData = {
+  type: 'erc20',
+  symbol: 'AD1',
+  name: 'ERC 20 Token',
+  initialSupply: 5000,
+  imageUrl: 'https://brand.assets.adidas.com/image/upload/f_auto,q_auto,fl_lossy/enUS/Images/rfto-logo-small-d_tcm221-895039.png'
+};
+
+contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
+  const gasprice = gasAmount * 1.4;
+  console.log('running post data');
+  return contract.methods.createErc20Token(tempData.name, tempData.symbol, tempData.initialSupply, apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice});
+}).then((res, err) => {
+  console.log(err, res);
+})
