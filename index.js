@@ -57,8 +57,8 @@ const handleCreateERC20Reward = async (event) => {
 
   const tempData = JSON.parse(event.body);
   console.log(tempData, typeof tempData);
-  console.log(tempData.initialSuppy);
-  return contract.methods.createErc20Token(tempData.name, tempData.symbol, ethers.BigNumber.from(tempData.initialSuppy), apiUserAddressFinal).send({from:apiUserAddressFinal});
+  console.log(tempData.initialSupply);
+  return contract.methods.createErc20Token(tempData.name, tempData.symbol, ethers.BigNumber.from(tempData.initialSupply), apiUserAddressFinal).send({from:apiUserAddressFinal});
 }
 
 const handleCreateUnlockReward= async (event) => {
