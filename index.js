@@ -66,7 +66,7 @@ const handleCreateERC20Reward = async (event) => {
     console.log(res);
     return res;
   }).catch((err) => {
-    console.log(err);
+    console.log('error',err);
     return err;
   })
   
