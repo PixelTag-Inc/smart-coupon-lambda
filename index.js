@@ -18,9 +18,6 @@ const contractAddress = process.env.WORKSMANAGER_ADDRESS_MUMBAI;
 const apiUserPrivateKey = process.env.API_ETH_PRIVATE_KEY;
 const apiUserAddress = process.env.API_ETH_ADDRESS;
 let networkId = parseInt(process.env.CHAINID);
-const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
-  
-web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
 
 const postRequest = async (event) => {
   if (event.rawPath === '/update-membership-list') {
@@ -52,6 +49,8 @@ const handler = (event, context) => {
 const handleCreateERC20Reward = async (event) => {
   console.log(event.body, typeof event.body);
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+  const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
+  web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
   const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
   //let data = JSON.parse(event.body);
 
@@ -75,7 +74,8 @@ const handleCreateERC20Reward = async (event) => {
 const handleCreateUnlockReward= async (event) => {
   console.log(event.body, typeof event.body);
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
-  
+  const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
+  web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
   const contract = new web3.eth.Contract(unlockABI.abi, UNLOCK_ADDRESS);
   //let data = JSON.parse(event.body);
 
