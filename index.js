@@ -79,7 +79,7 @@ const handleCreateUnlockReward= async (event) => {
   const contract = new web3.eth.Contract(unlockABI.abi, unlockAddress);
   //let data = JSON.parse(event.body);
 
-  const tempData = event.body;
+  const tempData = JSON.parse(event.body);
   const salt = web3.utils.randomHex(12);
   return contract.methods.createLock(
     ethers.constants.MaxUint256, 
