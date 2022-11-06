@@ -153,6 +153,7 @@ const handleRewardUserERC20 = async (event) => {
 
 const handleRewardUserERC721 = async (event) => {
   const _data = JSON.parse(event.body); // contractAddress, amount, walletAddress, name, imageUrl, symbol
+  console.log(_data);
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
   web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
@@ -163,7 +164,6 @@ const handleRewardUserERC721 = async (event) => {
   const [imageBase64, filetype] = await convertURIToImageData(_data.imageUrl);
   const nft = await storeNFTMetadata(_data.name, _data.name+' NFT', imageBase64, filetype, {});
 
-  
   return contract.methods.grantKeys(
     [web3.utils.toChecksumAddress(_data.walletAddress)], 
     [ethers.constants.MaxUint256],
