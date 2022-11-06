@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Lambda backend for SmartCoupon",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
@@ -14,6 +13,7 @@
     "@unlock-protocol/contracts": "^0.0.13",
     "dotenv": "^16.0.2",
     "ethers": "^5.7.2",
+    "nft.storage": "^7.0.0",
     "web3": "^1.8.0"
   }
 }
