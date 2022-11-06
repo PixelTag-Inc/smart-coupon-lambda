@@ -80,10 +80,10 @@ const handleCreateUnlockReward= async (event) => {
   //let data = JSON.parse(event.body);
 
   const tempData = event.body;
-  return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
+  return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name, null).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
     const gasprice = gasAmount * 1.4;
     console.log('running post data');
-    return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name).send({from:apiUserAddressFinal, gas: gasprice});
+    return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name, null).send({from:apiUserAddressFinal, gas: gasprice});
   }).then((res, err) => {
     console.log('success',res);
     return res.events['0'].address;
