@@ -122,7 +122,7 @@ const handleCreateUnlockReward = async (event) => {
   }).then((res, err) => {
     console.log('success',res, err);
     
-    return res.events['NewLock'].address;
+    return res.events['0'].address;
   }).catch((err) => {
     console.log('error',err);
     return err;
@@ -262,31 +262,49 @@ const storeNFTMetadata = async (name, description, image, filetype, mapping) => 
 };
 
 exports.handler = handler;
-//const temp = 5000;
-//console.log(ethers.BigNumber.from(temp))
-//const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
-/*const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
-const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
-web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
-const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
-//let data = JSON.parse(event.body);
 
-const _data = {
-  "type": "erc721",
-  "symbol": "AD1-A",
-  "name": "Welcome NFT",
-  "initialSupply": "5000",
-  "imageUrl": "https://brand.assets.adidas.com/image/upload/f_auto,q_auto,fl_lossy/enUS/Images/rfto-logo-small-d_tcm221-895039.png"
-};
+const runAsync = async () => {
+  const _data = {
+    walletAddress: '0x48563D816C1E171cA6306fd28c450895Df0379df',
+    symbol: 'ADI-ER-NFT',
+    name: 'Enrichment NFT',
+    imageUrl: 'https://brand.assets.adidas.com/image/upload/f_auto,q_auto,fl_lossy/enUS/Images/rfto-logo-small-d_tcm221-895039.png',
+    contractAddress: '0x1FF7e338d5E582138C46044dc238543Ce555C963',
+    amount: '500'
+  }
+  const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+  const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
+  web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
+  const contract = new web3.eth.Contract(publicLockABI.abi, web3.utils.toChecksumAddress(_data.contractAddress));
+  //let data = JSON.parse(event.body);
+  const [imageBase64, filetype] = await convertURIToImageData(_data.imageUrl);
+  
+  const nft = await storeNFTMetadata(_data.name, _data.name+' NFT', imageBase64, filetype, {});
+  console.log(web3.utils.toChecksumAddress(_data.contractAddress));
+  return contract.methods.grantKeys(
+    [web3.utils.toChecksumAddress(_data.walletAddress)], 
+    [ethers.constants.MaxUint256],
+    [apiUserAddressFinal]
+  ).estimateGas({from:apiUserAddressFinal})
+  .then((gasAmount) => {
+    console.log(gasAmount);
+    const gasprice = gasAmount * 2;
+    console.log('running post data');
+    return contract.methods.grantKeys(
+      [web3.utils.toChecksumAddress(_data.walletAddress)], 
+      [ethers.constants.MaxUint256],
+      [apiUserAddressFinal]
+    ).send({from:apiUserAddressFinal, gas: ethers.BigNumber.from(gasprice.toFixed(0))});
+  }).then((res, err) => {
+    console.log('success grantKeys',res, err);
+    return contract.methods.setLockMetadata(_data.name, _data.symbol, nft.url);
+  }).then((res, err) => {
+    console.log('success setLockMetadata',res, err);
+    return 'success';
+  }).catch((err) => {
+    console.log('error',err);
+    return err;
+  })
+}
 
-return contract.methods.createErc20Token(_data.name, _data.symbol, ethers.utils.parseEther(_data.initialSupply), apiUserAddressFinal).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
-  const gasprice = gasAmount * 1.4;
-  console.log('running post data');
-  return contract.methods.createErc20Token(_data.name, _data.symbol,  ethers.utils.parseEther(_data.initialSupply), apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice.toFixed(0)});
-}).then((res, err) => {
-  console.log('success',res);
-  return res.events['0'].address;
-}).catch((err) => {
-  console.log('error',err);
-  return err;
-})*/
+//runAsync();
