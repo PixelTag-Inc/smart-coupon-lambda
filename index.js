@@ -114,7 +114,7 @@ exports.handler = handler;
 //const temp = 5000;
 //console.log(ethers.BigNumber.from(temp))
 //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
-const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+/*const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
 const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
 web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
 const contract = new web3.eth.Contract(unlockABI.abi, unlockAddress);
@@ -154,4 +154,4 @@ return contract.methods.createLock(
 }).catch((err) => {
   console.log('error',err);
   return err;
-})
+})*/
