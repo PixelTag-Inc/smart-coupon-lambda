@@ -1,7 +1,7 @@
 
 
 // Used for testing in local env
-require('dotenv').config();
+//require('dotenv').config();
 
 const Web3 = require('web3');
 const ethers = require('ethers');
@@ -76,7 +76,7 @@ const handleCreateUnlockReward= async (event) => {
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
   web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
-  const contract = new web3.eth.Contract(unlockABI.abi, UNLOCK_ADDRESS);
+  const contract = new web3.eth.Contract(unlockABI.abi, unlockAddress);
   //let data = JSON.parse(event.body);
 
   const tempData = event.body;
