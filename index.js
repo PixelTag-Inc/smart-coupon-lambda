@@ -2,7 +2,9 @@
 
 // Used for testing in local env
 require('dotenv').config();
-let nftStore = require('nft.storage');
+const nftStore = require('nft.storage');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
 
 const Web3 = require('web3');
 const ethers = require('ethers');
@@ -74,7 +76,7 @@ const handleCreateERC20Reward = async (event) => {
 
   const _data = JSON.parse(event.body);
   return contract.methods.createErc20Token(_data.name, _data.symbol, ethers.utils.parseEther(_data.initialSupply), apiUserAddressFinal).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
-    const gasprice = gasAmount * 1.4;
+    const gasprice = gasAmount * 2;
     console.log('running post data');
     return contract.methods.createErc20Token(_data.name, _data.symbol,  ethers.utils.parseEther(_data.initialSupply), apiUserAddressFinal).send({from:apiUserAddressFinal, gas: gasprice.toFixed(0)});
   }).then((res, err) => {
@@ -106,7 +108,7 @@ const handleCreateUnlockReward = async (event) => {
   ).estimateGas({from:apiUserAddressFinal})
   .then((gasAmount) => {
     console.log(gasAmount);
-    const gasprice = gasAmount * 1.4;
+    const gasprice = gasAmount * 2;
     console.log('running post data');
     return contract.methods.createLock(
       ethers.constants.MaxUint256, 
@@ -135,7 +137,7 @@ const handleRewardUserERC20 = async (event) => {
   //let data = JSON.parse(event.body);
 
   return contract.methods.mint(web3.utils.toChecksumAddress(_data.walletAddress),  ethers.utils.parseEther(_data.amount)).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
-    const gasprice = gasAmount * 1.4;
+    const gasprice = gasAmount * 2;
     console.log('running post data');
     return contract.methods.mint(web3.utils.toChecksumAddress(_data.walletAddress), ethers.utils.parseEther(_data.amount)).send({from:apiUserAddressFinal, gas: gasprice.toFixed(0)});
   }).then((res, err) => {
@@ -157,11 +159,8 @@ const handleRewardUserERC721 = async (event) => {
   //let data = JSON.parse(event.body);
 
   const salt = web3.utils.randomHex(12);
-  const nft = await nftStorageClient.store({
-    name: _data.name,
-    description: _data.name+' NFT',
-    image: _data.imageUrl
-  });
+  const [imageBase64, filetype] = convertURIToImageData(_data.imageUrl);
+  const nft = await storeNFTMetadata(_data.name, _data.name+' NFT', imageBase64, filetype, {});
 
   
   return contract.methods.grantKeys(
@@ -171,7 +170,7 @@ const handleRewardUserERC721 = async (event) => {
   ).estimateGas({from:apiUserAddressFinal})
   .then((gasAmount) => {
     console.log(gasAmount);
-    const gasprice = gasAmount * 1.4;
+    const gasprice = gasAmount * 2;
     console.log('running post data');
     return contract.methods.grantKeys(
       [web3.utils.toChecksumAddress(_data.walletAddress)], 
@@ -190,11 +189,82 @@ const handleRewardUserERC721 = async (event) => {
   })
 }
 
+const convertURIToImageData = async (url) => {
+  if (!url) {
+    return null;
+  }
+  const httpOptions = {
+    method: "GET",
+    url: url,
+    responseType: "stream"
+  };
+  let filetype = '';
+  //const result = await axios(httpOptions);
+  //return new Blob([result.data.toString('base64')], {type: result.headers['content-type']});
+  return fetch(url)
+  .then(res => res.blob()) // Gets the response and returns it as a blob
+  .then(blob => {
+    filetype = blob.type;
+    return blob.arrayBuffer();
+    //return  new File([blob], fileName, { lastModified: new Date().getTime(), type: blob.type });
+  }).then(arrayBuffer => {
+    const base64String = Buffer.from(arrayBuffer).toString('base64');
+    const returnString = 'data:'+filetype+';base64,'+base64String;
+    return [returnString, filetype];
+  });
+
+  
+
+  /*return axios(httpOptions).then((result, err) => {
+    //console.log(result.data)
+    //let data = "data:" + result.headers["content-type"] + ";base64," + Buffer.from(result.data).toString('base64')
+    return Buffer.from(result.data).toString('base64');
+  });*/
+}
+
+if (!String.format) {
+  String.format = function(format) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return format.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number] 
+        : match
+      ;
+    });
+  };
+}
+
+const storeNFTMetadata = async (name, description, image, filetype, mapping) => {
+  let rawObj = {};
+  if (image) {
+    rawObj = {
+      name: name,
+      description: description,
+      image: new File(
+        [
+          image
+        ],
+        'image',
+        { type: filetype }
+      )
+    };
+  } 
+
+  if (mapping) {
+    for(let m in mapping) {
+      rawObj[m] = mapping[m];
+    }
+  }
+
+  let metadata = await nftStorageClient.store(rawObj);
+  return metadata;
+};
+
 exports.handler = handler;
 //const temp = 5000;
 //console.log(ethers.BigNumber.from(temp))
 //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
-const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+/*const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
 const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
 web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
 const contract = new web3.eth.Contract(ERC20FactoryABI.abi, factoryAddress);
@@ -218,4 +288,4 @@ return contract.methods.createErc20Token(_data.name, _data.symbol, ethers.utils.
 }).catch((err) => {
   console.log('error',err);
   return err;
-})
+})*/
