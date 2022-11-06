@@ -159,7 +159,7 @@ const handleRewardUserERC721 = async (event) => {
   //let data = JSON.parse(event.body);
 
   const salt = web3.utils.randomHex(12);
-  const [imageBase64, filetype] = convertURIToImageData(_data.imageUrl);
+  const [imageBase64, filetype] = await convertURIToImageData(_data.imageUrl);
   const nft = await storeNFTMetadata(_data.name, _data.name+' NFT', imageBase64, filetype, {});
 
   
