@@ -1,7 +1,7 @@
 
 
 // Used for testing in local env
-//require('dotenv').config();
+require('dotenv').config();
 
 const Web3 = require('web3');
 const ethers = require('ethers');
@@ -80,13 +80,30 @@ const handleCreateUnlockReward= async (event) => {
   //let data = JSON.parse(event.body);
 
   const tempData = event.body;
-  return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name, ethers.utils.randomBytes(12)).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
+  const salt = web3.utils.randomHex(12);
+  return contract.methods.createLock(
+    ethers.constants.MaxUint256, 
+    ethers.constants.AddressZero, 
+    ethers.constants.Zero, 
+    ethers.constants.MaxUint256, 
+    tempData.name, 
+    salt
+  ).estimateGas({from:apiUserAddressFinal})
+  .then((gasAmount) => {
+    console.log(gasAmount);
     const gasprice = gasAmount * 1.4;
     console.log('running post data');
-    return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name, ethers.utils.randomBytes(12)).send({from:apiUserAddressFinal, gas: gasprice});
+    return contract.methods.createLock(
+      ethers.constants.MaxUint256, 
+      ethers.constants.AddressZero, 
+      ethers.constants.Zero, 
+      ethers.constants.MaxUint256, 
+      tempData.name, 
+      salt
+    ).send({from:apiUserAddressFinal, gas: ethers.BigNumber.from(gasprice.toFixed(0))});
   }).then((res, err) => {
-    console.log('success',res);
-    return res.events['0'].address;
+    console.log('success',res, err);
+    return res.events['NewLock'].address;
   }).catch((err) => {
     console.log('error',err);
     return err;
@@ -97,3 +114,44 @@ exports.handler = handler;
 //const temp = 5000;
 //console.log(ethers.BigNumber.from(temp))
 //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
+const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
+web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(apiUserPrivateKey));
+const contract = new web3.eth.Contract(unlockABI.abi, unlockAddress);
+//let data = JSON.parse(event.body);
+
+const tempData = {
+  "type": "erc721",
+  "symbol": "AD1-A",
+  "name": "Welcome NFT",
+  "initialSupply": 5000,
+  "imageUrl": "https://brand.assets.adidas.com/image/upload/f_auto,q_auto,fl_lossy/enUS/Images/rfto-logo-small-d_tcm221-895039.png"
+};
+const salt = web3.utils.randomHex(12);
+return contract.methods.createLock(
+  ethers.constants.MaxUint256, 
+  ethers.constants.AddressZero, 
+  ethers.constants.Zero, 
+  ethers.constants.MaxUint256, 
+  tempData.name, 
+  salt
+).estimateGas({from:apiUserAddressFinal})
+.then((gasAmount) => {
+  console.log(gasAmount);
+  const gasprice = gasAmount * 1.4;
+  console.log('running post data');
+  return contract.methods.createLock(
+    ethers.constants.MaxUint256, 
+    ethers.constants.AddressZero, 
+    ethers.constants.Zero, 
+    ethers.constants.MaxUint256, 
+    tempData.name, 
+    salt
+  ).send({from:apiUserAddressFinal, gas: ethers.BigNumber.from(gasprice.toFixed(0))});
+}).then((res, err) => {
+  console.log('success',res, err);
+  return res.events['0'].address;
+}).catch((err) => {
+  console.log('error',err);
+  return err;
+})
