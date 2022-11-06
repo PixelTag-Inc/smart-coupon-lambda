@@ -80,7 +80,17 @@ const handleCreateUnlockReward= async (event) => {
   //let data = JSON.parse(event.body);
 
   const tempData = event.body;
-  return contract.methods.createErc20Token(tempData.name, tempData.symbol, ethers.BigNumber.from(tempData.initialSuppy), apiUserAddressFinal).send({from:apiUserAddressFinal});
+  return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name).estimateGas({from:apiUserAddressFinal}).then((gasAmount) => {
+    const gasprice = gasAmount * 1.4;
+    console.log('running post data');
+    return contract.methods.createLock(ethers.constants.MaxUint256, ethers.constants.AddressZero, ethers.constants.Zero, ethers.constants.MaxUint256, tempData.name).send({from:apiUserAddressFinal, gas: gasprice});
+  }).then((res, err) => {
+    console.log('success',res);
+    return res.events['0'].address;
+  }).catch((err) => {
+    console.log('error',err);
+    return err;
+  })
 }
 
 exports.handler = handler;
