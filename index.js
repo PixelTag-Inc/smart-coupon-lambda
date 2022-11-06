@@ -65,7 +65,6 @@ const handler = (event, context) => {
   }
 }; 
 
-//function createErc20Token(string calldata tokenName, string calldata symbol, uint256 supply, address to) external returns(address)
 const handleCreateERC20Reward = async (event) => {
   const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
   const apiUserAddressFinal = web3.utils.toChecksumAddress(apiUserAddress);
