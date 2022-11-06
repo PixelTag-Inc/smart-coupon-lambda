@@ -3,6 +3,7 @@
 // Used for testing in local env
 require('dotenv').config();
 const nftStore = require('nft.storage');
+const {  File } = require('nft.storage');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 
