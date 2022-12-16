@@ -3,7 +3,7 @@
 // Used for testing in local env
 require('dotenv').config();
 const nftStore = require('nft.storage');
-const {  File } = require('nft.storage');
+const { File } = require('nft.storage');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 
@@ -19,7 +19,7 @@ const nftStorageClient = new nftStore.NFTStorage({ token: nftStorageApiKey })
 
 const factoryAddress = process.env.ERC20_FACTORY_ADDRESS;
 const unlockAddress = process.env.UNLOCK_ADDRESS;
-const wsUri = process.env.PUBLIC_WS_URI;
+const wsUri = process.env.WS_URI;
 
 console.log(wsUri);
 //const web3 = new Web3(new Web3.providers.WebsocketProvider(wsUri));
